@@ -40,18 +40,16 @@ def remove_chastisements(schoolkid_name):
 
 
 def create_commendation(schoolkid_name, lesson, year_of_study, group_letter):
-    try:
-        schoolkid = get_schoolkid(schoolkid_name)
-        lesson = Lesson.objects.filter(
-            year_of_study=year_of_study,
-            group_letter=group_letter,
-            subject__title__contains=lesson).order_by('-date').first()
-        commendation_text = random.choice(COMMENDATIONS)
-        Commendation.objects.create(text=commendation_text,
-                                    created=lessons.date,
-                                    schoolkid=schoolkid,
-                                    subject=lessons.subject,
-                                    teacher=lessons.teacher)
-    except AttributeError:
-        print("Неверно введен предмет или год обучения или литер класса")
-        
+    schoolkid = check_schoolkid(schoolkid_name)
+    lesson = Lesson.objects.filter(
+        year_of_study=year_of_study,
+        group_letter=group_letter,
+        subject__title__contains=lesson).order_by('-date').first()
+    if not lesson:
+        return print('Такой предмет не найден')
+    commendation_text = random.choice(COMMENDATIONS)
+    Commendation.objects.create(text=commendation_text,
+                                created=lesson.date,
+                                schoolkid=schoolkid,
+                                subject=lesson.subject,
+                                teacher=lesson.teacher)     
