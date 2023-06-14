@@ -31,16 +31,22 @@ def get_schoolkid(schoolkid_name):
 
 def fix_marks(schoolkid_name):
     schoolkid = get_schoolkid(schoolkid_name)
+    if not schoolkid:
+        return print('Такой ученик не найден')
     Mark.objects.filter(schoolkid=schoolkid, points__lte=3).update(points=5)
 
 
 def remove_chastisements(schoolkid_name):
     schoolkid = get_schoolkid(schoolkid_name)
+    if not schoolkid:
+        return print('Такой ученик не найден')
     Chastisement.objects.filter(schoolkid=schoolkid).delete()
 
 
 def create_commendation(schoolkid_name, lesson, year_of_study, group_letter):
     schoolkid = check_schoolkid(schoolkid_name)
+    if not schoolkid:
+        return print('Такой ученик не найден')
     lesson = Lesson.objects.filter(
         year_of_study=year_of_study,
         group_letter=group_letter,
