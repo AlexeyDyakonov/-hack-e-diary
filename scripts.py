@@ -4,7 +4,7 @@ from datacenter.models import (Chastisement, Commendation, Lesson, Mark,
                                Schoolkid)
 
 
-COMMENDATION = ['Молодец!',
+COMMENDATIONS = ['Молодец!',
                 'Отлично!',
                 'Хорошо!',
                 'Гораздо лучше, чем я ожидал!',
@@ -19,7 +19,7 @@ COMMENDATION = ['Молодец!',
                 'Ты растешь над собой!']
 
 
-def check_schoolkid(schoolkid_name):
+def get_schoolkid(schoolkid_name):
     try:
         schoolkid = Schoolkid.objects.get(full_name__contains=schoolkid_name)
         return schoolkid
@@ -30,23 +30,23 @@ def check_schoolkid(schoolkid_name):
         
 
 def fix_marks(schoolkid_name):
-    schoolkid = check_schoolkid(schoolkid_name)
+    schoolkid = get_schoolkid(schoolkid_name)
     Mark.objects.filter(schoolkid=schoolkid, points__lte=3).update(points=5)
 
 
 def remove_chastisements(schoolkid_name):
-    schoolkid = check_schoolkid(schoolkid_name)
+    schoolkid = get_schoolkid(schoolkid_name)
     Chastisement.objects.filter(schoolkid=schoolkid).delete()
 
 
 def create_commendation(schoolkid_name, lesson, year_of_study, group_letter):
     try:
-        schoolkid = check_schoolkid(schoolkid_name)
-        lessons = Lesson.objects.filter(
+        schoolkid = get_schoolkid(schoolkid_name)
+        lesson = Lesson.objects.filter(
             year_of_study=year_of_study,
             group_letter=group_letter,
-            subject__title__contains=lesson).order_by('-subject').first()
-        commendation_text = random.choice(COMMENDATION)
+            subject__title__contains=lesson).order_by('-date').first()
+        commendation_text = random.choice(COMMENDATIONS)
         Commendation.objects.create(text=commendation_text,
                                     created=lessons.date,
                                     schoolkid=schoolkid,
